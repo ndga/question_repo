@@ -54,10 +54,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'question_repo.urls'
 
+# 配置html文件的查找路径
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 整个项目共用一套html，所以直接放在项目根目录
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,7 +118,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+# 静态文件的查找路径
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(os.path.join(BASE_DIR, "static"))
+]
+
 
 LOG_ROOT = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_ROOT):
