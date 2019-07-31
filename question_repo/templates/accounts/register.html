@@ -1,0 +1,150 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Mosaddek">
+    <meta name="keyword" content="FlatLab, Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+    <link rel="shortcut icon" href="http://127.0.0.1:8000/accounts/login/img/favicon.html">
+    <title>用户登录-三创题库系统</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-reset.css' %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static 'assets/font-awesome/css/font-awesome.css' %}" rel="stylesheet"/>
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet"/>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    {# 加载提示工具对应的js和css #}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/gritter/css/jquery.gritter.css' %}"/>
+    <script type="text/javascript" src="{% static 'assets/gritter/js/jquery.gritter.js' %}"></script>
+</head>
+<body class="login-body">
+<div class="container">
+    <form class="form-signin" id="register_form">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">用户注册</h2>
+        <div class="login-wrap">
+            {{ form.username }}
+            {{ form.password }}
+            {{ form.password2 }}
+            {{ form.mobile }}
+            {{ form.mobile_captcha }}
+            {# 给发送短信按钮添加动作 #}
+            <input onclick="sendmessage(this,60);" type="button" value="发送短信" class="btn btn-info"
+                   style="height:38px;width: 125px;"/>
+            <button class="btn btn-lg btn-login btn-block" type="button" id="register_btn">注册</button>
+            <label class="checkbox">
+                <span class="pull-right"> 已有帐号， <a href="{% url 'accounts:login' %}"> 请登录 </a></span>
+            </label>
+            <div class="alert alert-block alert-danger fade in">
+                <button data-dismiss="alert" class="close close-sm" type="button">
+                    <i class="icon-remove"></i>
+                </button>
+                <strong>提醒!</strong> 错误提示信息~~
+            </div>
+        </div>
+    </form>
+</div>
+{# 添加js动作#}
+<script>
+    {# 发送短信验证码 #}
+    function sendmessage(obj, second) {
+        var telRegex = /(13|14|15|17|18)\d{9}/;
+        if (telRegex.test($.trim($("#id_mobile").val()))) {
+            $.ajax({
+                url: "{% url 'apis:get_mobile_captcha' %}",
+                type: "GET",
+                dataType: "json",
+                data: {"mobile": $("#id_mobile").val()},
+                success: function (data) {
+                    $.gritter.add({
+                        // (string | mandatory) the heading of the notification
+                        title: '提交结果',
+                        // (string | mandatory) the text inside the notification
+                        //text: 'This will fade out after a certain amount of time. Vivamus eget tincidunt velit. Cum sociis natoque penatibus et <a href="#" style="color:#ccc">magnis dis parturient</a> montes, nascetur ridiculus mus.'
+                        text: data.msg
+                    });
+                }
+            });
+            countDown(obj, second)
+        } else {
+            $.gritter.add({
+                // (string | mandatory) the heading of the notification
+                title: '提交结果',
+                // (string | mandatory) the text inside the notification
+                //text: 'This will fade out after a certain amount of time. Vivamus eget tincidunt velit. Cum sociis natoque penatibus et <a href="#" style="color:#ccc">magnis dis parturient</a> montes, nascetur ridiculus mus.'
+                text: '手机号有误'
+            });
+        }
+    }
+
+    {# 重新发送倒计时 #}
+    function countDown(obj, second) {
+        // 如果秒数还是大于0，则表示倒计时还没结束
+        if (second >= 0) {
+            // 获取默认按钮上的文字
+            if (typeof buttonDefaultValue === 'undefined') {
+                buttonDefaultValue = obj.defaultValue;
+            }
+            // 按钮置为不可点击状态
+            obj.disabled = true;
+            // 按钮里的内容呈现倒计时状态
+            obj.value = buttonDefaultValue + '(' + second + ')';
+            // 时间减一
+            second--;
+            // 一秒后重复执行
+            setTimeout(function () {
+                countDown(obj, second);
+            }, 1000);
+            // 否则，按钮重置为初始状态
+        } else {
+            // 按钮置未可点击状态
+            obj.disabled = false;
+            // 按钮里的内容恢复初始状态
+            obj.value = buttonDefaultValue;
+        }
+    }
+    $("#register_btn").click(function () {
+        // some_check
+        $.ajax({
+            url: "{% url 'accounts:register' %}",
+            type: "POST",
+            dataType: "json",
+            data: $("#register_form").serialize(),
+            success: function (data) {
+                if (data.status == 200) {
+                    window.location.href = '{% url 'repo:index' %}';
+                } else {
+                    msg = "新错误类型"
+                    if (data.status == 400 || data.status == 401) {
+                        msg = data.msg
+                    } else {
+                        for (var i in data.msg) {
+                            msg = i + data.msg[i]
+                            break
+                        }
+                    }
+                    $.gritter.add({
+                        // (string | mandatory) the heading of the notification
+                        title: '提交结果',
+                        // (string | mandatory) the text inside the notification
+                        //text: 'This will fade out after a certain amount of time. Vivamus eget tincidunt velit. Cum sociis natoque penatibus et <a href="#" style="color:#ccc">magnis dis parturient</a> montes, nascetur ridiculus mus.'
+                        text: msg
+                    });
+                }
+            },
+            // 解决csrftoken
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

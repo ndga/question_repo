@@ -5,12 +5,15 @@
 """
 from django.conf.urls import url
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # 注册
-    url(r'register/$', views.test, name="register"),
+    # TemplateView可以不写视图函数
+    # url(r'register/$', TemplateView.as_view(template_name="accounts/register.html"), name="register"),
+    url(r'register/$', views.Register.as_view(), name="register"),
     # 登录
-    url(r'login/$', views.test, name="login"),
+    url(r'login/$', TemplateView.as_view(template_name="login.html"), name="login"),
     # 退出
     url(r'logout/$', views.test, name="logout"),
     # 忘记密码

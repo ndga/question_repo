@@ -124,7 +124,6 @@ STATICFILES_DIRS = [
     os.path.join(os.path.join(BASE_DIR, "static"))
 ]
 
-
 LOG_ROOT = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_ROOT):
     os.mkdir(LOG_ROOT)
@@ -135,7 +134,7 @@ LOGGING = {
     'formatters': {
         'standard': {
             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            # 日志格式
+        # 日志格式
     },
     'filters': {
     },
@@ -152,6 +151,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 文件大小
             'backupCount': 5,  # 备份份数
             'formatter': 'standard',  # 使用哪种formatters日志格式
+            'encoding': 'utf-8',
         },
         'error': {
             'level': 'ERROR',
@@ -160,11 +160,13 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
+            'encoding': 'utf-8',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+            'formatter': 'standard',
+            'encoding': 'utf-8',
         },
         'request_handler': {
             'level': 'DEBUG',
@@ -173,6 +175,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
+            'encoding': 'utf-8',
         },
         'scprits_handler': {
             'level': 'DEBUG',
@@ -181,6 +184,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
+            'encoding': 'utf-8',
         },
         'account_handler': {
             'level': 'DEBUG',
@@ -189,6 +193,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
+            'encoding': 'utf-8',
         },
         'apis_handler': {
             'level': 'DEBUG',
@@ -206,6 +211,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
+            'encoding': 'utf-8',
         }
     },
     'loggers': {
@@ -231,3 +237,25 @@ LOGGING = {
         },
     }
 }
+
+CACHES = {
+    'default': {
+        # BACKEND配置缓存后端为RedisCache
+        'BACKEND': 'django_redis.cache.RedisCache',
+        # LOCATION配置redis服务器地址
+        'LOCATION': 'redis://192.168.0.178:6379',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "rootroot",
+        },
+    },
+}
+
+# # 以下配置可参考，在settings自定义配置项，方便统一管理
+# REDIS_TIMEOUT=7*24*60*60
+# CUBES_REDIS_TIMEOUT=60*60
+# NEVER_REDIS_TIMEOUT=365*24*60*60
+
+# 自定义用户model： "应用名.Model名
+AUTH_USER_MODEL = 'accounts.User'
+# 注意：如果扩展了User一定需要指定AUTH_USER_MODEL
