@@ -151,7 +151,6 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 文件大小
             'backupCount': 5,  # 备份份数
             'formatter': 'standard',  # 使用哪种formatters日志格式
-            'encoding': 'utf-8',
         },
         'error': {
             'level': 'ERROR',
@@ -160,13 +159,11 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'standard',
-            'encoding': 'utf-8',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
-            'encoding': 'utf-8',
         },
         'request_handler': {
             'level': 'DEBUG',
@@ -259,3 +256,6 @@ CACHES = {
 # 自定义用户model： "应用名.Model名
 AUTH_USER_MODEL = 'accounts.User'
 # 注意：如果扩展了User一定需要指定AUTH_USER_MODEL
+
+# FontPath
+FontPath = os.path.join(BASE_DIR, 'static/fonts')
