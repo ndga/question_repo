@@ -77,16 +77,14 @@
                             <thead>
                             <tr>
                                 <th data-field="state" data-checkbox="true"></th>
-                                <th data-field="id">序号
-                                </th>
-                                <th data-field="title">标题
-                                </th>
-                                <th data-field="grade">难度
-                                </th>
-                                <th>答题率
-                                </th>
-                                <th data-field="oper">
-                                    操作
+                                <th data-field="id">序号</th>
+                                <!--标题格式为自定义函数titleFormatter返回的样式-->
+                                <th data-field="title" data-formatter="titleFormatter">标题</th>
+                                <!--难度格式为自定义函数gradeFormatter返回的样式-->
+                                <th data-field="grade" data-formatter="gradeFormatter">难度</th>
+                                <!--答题率格式为自定义函数answerFormatter返回的样式-->
+                                <th data-field="answer" data-formatter="answerFormatter">答题率</th>
+                                <th data-field="oper">操作
                                 </th>
                             </tr>
                             </thead>
@@ -154,6 +152,44 @@
                 $table.bootstrapTable('refresh');
             });
         });
+
+
+        // 定义题目难度格式，返回html字符串，不同难度用不同中文和label颜色标记
+        function gradeFormatter(value, row, index) {
+            // value => 该单元格数据
+            // row =>   该行数据
+            // index => 数据在当前页的索引（从0开始）
+            console.log(value);
+            console.log(row);
+            console.log(index);
+            html = '<span class="label label-default">未知</span>';
+            if (value == 1) {
+                html = '<span class="label label-info">入门</span>'
+            } else if (value == 2) {
+                html = '<span class="label label-info">简单</span>'
+            } else if (value == 3) {
+                html = '<span class="label label-success">一般</span>'
+            } else if (value == 4) {
+                html = '<span class="label label-danger">困难</span>'
+            } else if (value == 5) {
+                html = '<span class="label label-danger">超难</span>'
+            }
+            return html
+        }
+
+        // 定义标题格式，返回html字符串
+        function titleFormatter(value, row, index) {
+            {#          url_question_detail = "/question/"+row.id+"/"; #}
+            url_question_detail = "{% url 'repo:question_detail' '0000' %}";
+            url_question_detail = url_question_detail.replace('0000', row.id);
+            // 返回标题的前50个字符
+            return "<a href='" + url_question_detail + "'>" + row.title.substring(0, 50) + "</a>";
+        }
+
+        // 定义答题率格式，返回html字符串
+        function answerFormatter(value, row, index) {
+            return '17%'
+        }
     </script>
 {% endblock %}
 

@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from .models import Category, Questions
 from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -14,11 +15,26 @@ def test(request):
 def index(request):
     return render(request, "index.html")
 
-class QuestionsList(View):
+@login_required
+def questions(request):
+    category = Category.objects.all()
+    grades = Questions.DIF_CHOICES
+    search = request.GET.get("search","")
+    kwgs = {"category":category,
+            "grades":grades,
+            "search_key":search
+            }
+    return  render(request, "questions.html", kwgs)
+
+class QuestionsList(LoginRequiredMixin,View):
     def get(self, request):
         category = Category.objects.all().values("id", "name")
         grades = Questions.DIF_CHOICES
         # 添加search参数，以便搜索刷新后在页面上还能看到搜索的关键字
-        search = request.GET.get("search", "")
-        kwgs = {"category":category, "grades":grades, "search_key":search}
+        search_key = request.GET.get("search", "")
+        kwgs = {"category":category, "grades":grades, "search_key":search_key}
         return render(request, 'questions.html', kwgs)
+
+class QuestionDetail(View):
+    def get(self, request, id):
+        return render(request, "question_detail.html")
