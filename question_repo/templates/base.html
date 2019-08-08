@@ -9,7 +9,7 @@
     <meta name="author" content="Mosaddek">
     <meta name="keyword" content="FlatLab, Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
     <link rel="shortcut icon" href="http://127.0.0.1:8000/img/favicon.html">
-    <title>{% block title %}BASE{% endblock %}-题库系统</title>
+    <title>{% block title %}{% endblock %}-{{ site.SITE_NAME }}</title>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <!--external css-->
@@ -27,8 +27,7 @@
     {% endblock %}
     <style>
         body {
-            font-size: 14px;
-        !important;
+            font-size: 14px; !important;
         }
     </style>
 </head>
@@ -56,32 +55,36 @@
                 </ul>
                 <ul class="nav pull-right top-menu">
                     <li>
-                        <form action="/question/">
-                            <input type="text" class="form-control search" placeholder="Search" name="search"
-                                   id="search">
+                        {# 注意修改链接，及value值为视图传递过来的值 #}
+                        <form action="{% url 'repo:questions' %}">
+                            <input type="text" class="form-control search" placeholder="Search" name="search" id="search" value="{{ search_key }}">
                         </form>
                     </li>
                     <!-- user login dropdown start-->
+                    {% if user.is_authenticated %}
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <img alt="" src="{% static 'img/1534323246.png' %}" height="30px">
 
-                    <li class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <img alt="" src="{% static 'img/1534323246.png' %}" height="30px">
-
-                            <span class="username">admin</span>
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <div class="log-arrow-up"></div>
-                            <li><a class="" href="http://127.0.0.1:8000/uc/profile/"> 个人资料 </a></li>
-                            <li><a class="" href="http://127.0.0.1:8000/uc/change_passwd/"> 修改密码 </a></li>
-                            <li><a class="" href="http://127.0.0.1:8000/uc/answer/"> 我的回答 </a></li>
-                            <li><a class="" href="http://127.0.0.1:8000/uc/collect/"> 我的收藏 </a></li>
-                            <li><a class="" href="#myModal-1" data-toggle="modal"> 贡献题目 </a></li>
-                            <li><a class="" href="http://127.0.0.1:8000/uc/contribut/"> 我的贡献 </a></li>
-                            <li><a class="" href="http://127.0.0.1:8000/accounts/logout/"> 退出 </a></li>
-                        </ul>
-                    </li>
-
+                                <span class="username">admin</span>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <div class="log-arrow-up"></div>
+                                <li><a class="" href="http://127.0.0.1:8000/uc/profile/"> 个人资料 </a></li>
+                                <li><a class="" href="http://127.0.0.1:8000/uc/change_passwd/"> 修改密码 </a></li>
+                                <li><a class="" href="http://127.0.0.1:8000/uc/answer/"> 我的回答 </a></li>
+                                <li><a class="" href="http://127.0.0.1:8000/uc/collect/"> 我的收藏 </a></li>
+                                <li><a class="" href="#myModal-1" data-toggle="modal"> 贡献题目 </a></li>
+                                <li><a class="" href="http://127.0.0.1:8000/uc/contribut/"> 我的贡献 </a></li>
+                                <li><a class="" href="http://127.0.0.1:8000/accounts/logout/"> 退出 </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <div style="float:right; margin-top:15px;margin-left:10px;">
+                            <a href="{% url 'accounts:login' %}">登录</a>|<a href="{% url 'accounts:register' %}">注册</a>
+                        </div>
+                    {% endif %}
                     <!-- user login dropdown end -->
                 </ul>
             </div>
@@ -91,9 +94,7 @@
         <section id="main-content">
             <section class="wrapper">
                 <!-- page start-->
-                <div class="row">
-                    {% block content %}这是BASE页面{% endblock %}
-                </div>
+                {% block content %}这是BASE页面{% endblock %}
                 <!-- page end-->
             </section>
         </section>
@@ -101,6 +102,7 @@
     </section>
 </div>
 {% include 'crontribute_modal.html' %}
+
 <!-- js placed at the end of the document so the pages load faster -->
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -111,6 +113,7 @@
 <script src="{% static 'js/owl.carousel.js' %}"></script>
 {% block load_js %}
 {% endblock %}
+
 <script>
     //owl carousel
     $(document).ready(function () {

@@ -9,7 +9,6 @@ from .models import User
 
 logger = logging.getLogger("account")
 
-
 # Create your views here.
 def test(request):
     return HttpResponse("功能测试")

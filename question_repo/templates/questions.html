@@ -2,548 +2,161 @@
 {% load staticfiles %}
 
 {% block title %}
-题目列表
+    题目列表
 {% endblock %}
 
 {% block content %}
-<div class="col-md-9">
-    <!--刷题汇报 start-->
-    <section class="panel">
-        <div class="revenue-head">
-          <span>
-              <i class="icon-bar-chart"></i>
-          </span>
-            <h3>刷题汇报</h3>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="bootstrap-table">
-                    <div class="fixed-table-toolbar">
-                        <div class="bs-bars pull-left">
-                            <div id="toolbar_table_questions">
-                                <form class="form-inline" role="form">
-                                    <div class="form-group">
-                                        <select class="form-control" id="grade" name="grade">
-                                            <option value="0" selected="selected"> 选择难度</option>
+    <div class="row">
+        <div class="col-md-9">
+            <!--刷题汇报middle start-->
+            <section class="panel">
+                <div class="revenue-head">
+                    <span>
+                        <i class="icon-bar-chart"></i>
+                    </span>
+                    <h3>刷题汇报</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div id="toolbar_table_questions">
+                            <form class="form-inline" role="form">
+                                <div class="form-group">
 
-                                            <option value="1"> 入门</option>
-
-                                            <option value="2"> 简单</option>
-
-                                            <option value="3"> 中等</option>
-
-                                            <option value="4"> 困难</option>
-
-                                            <option value="5"> 超难</option>
-
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <select class="form-control" id="category" name="category">
-                                            <option value="0" selected="selected"> 选择分类</option>
-
-                                            <option value="1">Python</option>
-
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <select class="form-control" id="status" name="status">
-                                            <option value="2" selected="selected"> 选择状态</option>
-                                            <option value="0"> 待刷</option>
-                                            <option value="1"> 已刷</option>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
+                                    <select class="form-control" id="grade" name="grade">
+                                        <option value="0">选择难度</option>
+                                        {% for item in grades %}
+                                            <option value="{{ item.0 }}"> {{ item.1 }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="category" name="category">
+                                        <option value="0"> 选择分类</option>
+                                        {% for item in category %}
+                                            <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="2"> 选择状态</option>
+                                        <option value="0"> 待刷</option>
+                                        <option value="1"> 已刷</option>
+                                    </select>
+                                </div>
+                            </form>
                         </div>
-                        <div class="columns columns-right btn-group pull-right">
-                            <button class="btn btn-default" type="button" name="refresh" title="刷新"><i
-                                    class="glyphicon glyphicon-refresh icon-refresh"></i></button>
-                            <div class="keep-open btn-group" title="列">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i
-                                        class="glyphicon glyphicon-th icon-th"></i> <span class="caret"></span></button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><label><input type="checkbox" data-field="id" value="1" checked="checked">
-                                        序号</label></li>
-                                    <li><label><input type="checkbox" data-field="title" value="2" checked="checked"> 标题</label>
-                                    </li>
-                                    <li><label><input type="checkbox" data-field="grade" value="3" checked="checked"> 难度</label>
-                                    </li>
-                                    <li><label><input type="checkbox" data-field="answer" value="4" checked="checked">
-                                        答题率</label></li>
-                                    <li><label><input type="checkbox" data-field="oper" value="5" checked="checked"> 操作</label>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fixed-table-container" style="padding-bottom: 0px;">
-                        <div class="fixed-table-header" style="display: none;">
-                            <table></table>
-                        </div>
-                        <div class="fixed-table-body">
-                            <div class="fixed-table-loading" style="top: 42px; display: none;">正在努力地加载数据中，请稍候……</div>
-                            <table id="table_questions" name="table_questions"
-                                   data-toggle="table"
-                                   data-unique-id="id"
-                                   data-id-table="advancedTable"
-                                   data-side-pagination="server"
-                                   data-toolbar="#toolbar_table_questions"
-                                   data-show-columns="true"
-                                   data-page-list="[10, 25, 50, 100, ALL]"
-                                   data-pagination="true"
-                                   data-page-size="25"
-                                   data-pagination-first-text="首页"
-                                   data-pagination-pre-text="上一页"
-                                   data-pagination-next-text="下一页"
-                                   data-pagination-last-text="末页"
-                                   data-show-refresh="true"
-                                   data-query-params="queryParams"
-                                   data-url="/apis/questions/"
-                                   data-show-export="false"
-                                   data-export-types="['excel']"
-                                   data-export-options="{
-                    &quot;fileName&quot;: &quot;三创题库&quot;,
-                    &quot;worksheetName&quot;: &quot;所有习题&quot;,
-                    }" class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th class="bs-checkbox " style="width: 36px; " data-field="state" tabindex="0">
-                                        <div class="th-inner "><input name="btSelectAll" type="checkbox"></div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                    <th style="" data-field="id" tabindex="0">
-                                        <div class="th-inner ">序号</div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                    <th style="" data-field="title" tabindex="0">
-                                        <div class="th-inner ">标题</div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                    <th style="" data-field="grade" tabindex="0">
-                                        <div class="th-inner ">难度</div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                    <th style="" data-field="answer" tabindex="0">
-                                        <div class="th-inner ">答题率</div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                    <th style="" data-field="oper" tabindex="0">
-                                        <div class="th-inner ">操作</div>
-                                        <div class="fht-cell"></div>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr data-index="0" data-uniqueid="7567">
-                                    <td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox">
-                                    </td>
-                                    <td style="">7567</td>
-                                    <td style=""><a href="http://127.0.0.1:8000/question/7567/">单向链表如何使用快速排序算法进行排序；</a>
-                                    </td>
-                                    <td style=""><span class="label label-info">入门</span></td>
-                                    <td style="">17%</td>
-                                    <td style=""><a class="like" href="javascript:void(0)" title="收藏"><i
-                                            class="glyphicon glyphicon-heart-empty question-id-7567"></i></a></td>
-                                </tr>
-                                <tr data-index="1" data-uniqueid="7568">
-                                    <td class="bs-checkbox "><input data-index="1" name="btSelectItem" type="checkbox">
-                                    </td>
-                                    <td style="">7568</td>
-                                    <td style=""><a href="http://127.0.0.1:8000/question/7568/">手写：一个长度n的无序数字元素列表，如何求中位数，如何尽快的估算中位数</a>
-                                    </td>
-                                    <td style=""><span class="label label-info">简单</span></td>
-                                    <td style="">17%</td>
-                                    <td style=""><a class="like" href="javascript:void(0)" title="收藏"><i
-                                            class="glyphicon glyphicon-heart-empty question-id-7568"></i></a></td>
-                                </tr>
-                                <tr data-index="2" data-uniqueid="7569">
-                                    <td class="bs-checkbox "><input data-index="2" name="btSelectItem" type="checkbox">
-                                    </td>
-                                    <td style="">7569</td>
-                                    <td style=""><a href="http://127.0.0.1:8000/question/7569/">如何遍历一个内部未知的文件夹（两种树的优先遍历方式）</a>
-                                    </td>
-                                    <td style=""><span class="label label-success">一般</span></td>
-                                    <td style="">17%</td>
-                                    <td style=""><a class="like" href="javascript:void(0)" title="收藏"><i
-                                            class="glyphicon glyphicon-heart question-id-7569"></i></a></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="fixed-table-pagination" style="display: block;">
-                            <div class="pull-left pagination-detail">
-                                <span class="pagination-info">显示第 1 到第 25 条记录，总共 489 条记录</span><span class="page-list">每页显示
-                                <span class="btn-group dropup">
-                                    <button type="button" class="btn btn-default dropdown-toggle"
-                                            data-toggle="dropdown"><span class="page-size">25</span>
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="javascript:void(0)">10</a></li>
-                                    <li class="active"><a href="javascript:void(0)">25</a></li>
-                                    <li><a href="javascript:void(0)">50</a></li>
-                                    <li><a href="javascript:void(0)">100</a></li>
-                                    <li><a href="javascript:void(0)">All</a></li>
-                                </ul>
-                                </span> 条记录</span>
-                            </div>
-                            <div class="pull-right pagination">
-                                <ul class="pagination">
-                                    <li class="page-pre"><a href="javascript:void(0)">上一页</a></li>
-                                    <li class="page-number active"><a href="javascript:void(0)">1</a></li>
-                                    <li class="page-number"><a href="javascript:void(0)">2</a></li>
-                                    <li class="page-number"><a href="javascript:void(0)">3</a></li>
-                                    <li class="page-number"><a href="javascript:void(0)">4</a></li>
-                                    <li class="page-number"><a href="javascript:void(0)">5</a></li>
-                                    <li class="page-last-separator disabled"><a href="javascript:void(0)">...</a></li>
-                                    <li class="page-last"><a href="javascript:void(0)">20</a></li>
-                                    <li class="page-next"><a href="javascript:void(0)">下一页</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                        <table id="table_questions" name="table_questions"
+                               data-toggle="table"
+                               data-unique-id="id"
+                               data-id-table="advancedTable"
+                                {# 分页方式：服务端、客户端分页 #}
+                               data-side-pagination="server"
+                               data-toolbar="#toolbar_table_questions"
+                                {# queryPrams是一个函数名，表示查询的参数是该函数的返回值（后面会定义该函数） #}
+                               data-show-columns="true"
+                               data-page-list="[10, 25, 50, 100, ALL]"
+                               data-pagination="true"
+                               data-page-size="25"
+                               data-pagination-first-text="首页"
+                               data-pagination-pre-text="上一页"
+                               data-pagination-next-text="下一页"
+                               data-pagination-last-text="末页"
+                               data-show-refresh="true"
+                                {# 数据传递参数：queryParams是一个函数 #}
+                               data-query-params="queryParams"
+                                {# json格式=> 字典 => key => data-field #}
+                               data-url="/apis/questions/"
+                               data-show-export="true"
+                               data-export-types="['excel']"
+                               data-export-options='{
+                            "fileName":"三创题库",
+                            "worksheetName":"所有习题",
+                            }'
+                               class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th data-field="state" data-checkbox="true"></th>
+                                <th data-field="id">序号
+                                </th>
+                                <th data-field="title">标题
+                                </th>
+                                <th data-field="grade">难度
+                                </th>
+                                <th>答题率
+                                </th>
+                                <th data-field="oper">
+                                    操作
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
                     </div>
                 </div>
-                <div class="clearfix"></div>
-            </div>
+            </section>
+            <!--刷题汇报middle end-->
         </div>
-    </section>
-    <!--revenue end-->
-</div>
-<div class="col-md-3">
-    <!--刷题汇报 start-->
-    <section class="panel">
-        <div class="revenue-head">
-                                  <span>
-                                      <i class="icon-bar-chart"></i>
-                                  </span>
-            <h3>刷题汇报</h3>
+        <div class="col-md-3">
+            <!--刷题汇报right start-->
+            {% include 'right.html' %}
+            <!--刷题汇报right end-->
         </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-lg-6 col-sm-6 text-center">
-                    <div class="easy-pie-chart">
+    </div>
+{% endblock %}
+{% block load_js %}
+    <script src="{% static 'assets/bootstrap-table/bootstrap-table.js' %}"></script>
+    <script src="{% static 'assets/bootstrap-table/locale/bootstrap-table-zh-CN.min.js' %}"></script>
+    <script src="{% static 'assets/bootstrap-table/tableExport.js' %}"></script>
+    <script src="{% static 'assets/bootstrap-table/extensions/export/bootstrap-table-export.js' %}"></script>
+    <script>
+        $table = $("#table_questions");
+        // 生成请求发送给服务端的请求数据
+        function queryParams(tableParams) {
+            // 定义返回数据
+            var params = {};
+            // 获取pagesize, offset, page
+            console.log(tableParams);
+            // 偏移量
+            params['offset'] = tableParams.offset;
+            // 当前第几页
+            params['page'] = $table.bootstrapTable('getOptions').pageNumber;
+            // 每页多少条数据
+            params['limit'] = tableParams.limit;
+            params['search'] = $("#search").val();
+            // 工具栏上所有select,获取toolbar 的select对象有name，将名字和值取出
+            $('#toolbar_table_questions').find('select[name]').each(
+                function () {
+                    params[$(this).attr('name')] = $(this).val();
+                }
+            );
+            // 返回所有参数{"pagesize":20, "page":1, "offset":0}
+            // /apis/questions/?pagesize=20&page=1&offset=0
+            return params;
+        }
 
-                        <div class="percentage easyPieChart" data-percent="1"
-                             style="width: 135px; height: 135px; line-height: 135px;"><span>1</span>%
-                            <canvas width="135" height="135"></canvas>
-                        </div>
 
-                    </div>
-                    <p>你的排名：1/120</p>
-                </div>
-                <div class="col-lg-6 col-sm-6">
-                    <div class="chart-info chart-position">
-                        <span class="increase"></span>
-                        <span>已刷</span>
-                    </div>
-                    <div class="chart-info">
-                        <span class="decrease"></span>
-                        <span>待刷</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="panel-footer revenue-foot">
-            <ul>
-                <li class="first active">
-                    <a href="javascript:;">
-                        <i class="icon-bullseye"></i>
-                        待刷
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class=" icon-th-large"></i>
-                        已刷
-                    </a>
-                </li>
-                <li class="last">
-                    <a href="javascript:;">
-                        <i class=" icon-align-justify"></i>
-                        收藏
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </section>
-    <!--revenue end-->
+        // 当修改查询参数时，重新加载table数据
+        var $select_grade = $('#grade');
+        var $select_category = $('#category');
+        var $select_status = $('#status');
 
-    <!--近几个月刷题量 start-->
-    <section class="panel">
-        <div class="revenue-head">
-                                  <span>
-                                      <i class="icon-bar-chart"></i>
-                                  </span>
-            <h3>近几个月刷题量</h3>
-        </div>
-        <div class="panel-body">
-            <div class="custom-bar-chart">
-                <div class="bar">
-                    <div class="title">JAN</div>
-                    <div class="value tooltips" data-original-title="80%" data-toggle="tooltip" data-placement="top"
-                         style="height: 80%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">FEB</div>
-                    <div class="value tooltips" data-original-title="50%" data-toggle="tooltip" data-placement="top"
-                         style="height: 50%;"></div>
-                </div>
-                <div class="bar ">
-                    <div class="title">MAR</div>
-                    <div class="value tooltips" data-original-title="40%" data-toggle="tooltip" data-placement="top"
-                         style="height: 40%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">APR</div>
-                    <div class="value tooltips" data-original-title="55%" data-toggle="tooltip" data-placement="top"
-                         style="height: 55%;"></div>
-                </div>
-                <div class="bar">
-                    <div class="title">MAY</div>
-                    <div class="value tooltips" data-original-title="20%" data-toggle="tooltip" data-placement="top"
-                         style="height: 20%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">JUN</div>
-                    <div class="value tooltips" data-original-title="39%" data-toggle="tooltip" data-placement="top"
-                         style="height: 39%;"></div>
-                </div>
-                <div class="bar">
-                    <div class="title">JUL</div>
-                    <div class="value tooltips" data-original-title="75%" data-toggle="tooltip" data-placement="top"
-                         style="height: 75%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">AUG</div>
-                    <div class="value tooltips" data-original-title="45%" data-toggle="tooltip" data-placement="top"
-                         style="height: 45%;"></div>
-                </div>
-                <div class="bar ">
-                    <div class="title">SEP</div>
-                    <div class="value tooltips" data-original-title="50%" data-toggle="tooltip" data-placement="top"
-                         style="height: 50%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">OCT</div>
-                    <div class="value tooltips" data-original-title="42%" data-toggle="tooltip" data-placement="top"
-                         style="height: 42%;"></div>
-                </div>
-                <div class="bar ">
-                    <div class="title">NOV</div>
-                    <div class="value tooltips" data-original-title="60%" data-toggle="tooltip" data-placement="top"
-                         style="height: 60%;"></div>
-                </div>
-                <div class="bar doted">
-                    <div class="title">DEC</div>
-                    <div class="value tooltips" data-original-title="90%" data-toggle="tooltip" data-placement="top"
-                         style="height: 90%;"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--custom chart end-->
+        $(function () {
+            // 切换难度
+            $select_grade.change(function () {
+                $table.bootstrapTable('refresh');
+            });
+            // 切换分类
+            $select_category.change(function () {
+                $table.bootstrapTable('refresh');
+            });
+            // 切换状态
+            $select_status.change(function () {
+                $table.bootstrapTable('refresh');
+            });
+        });
+    </script>
+{% endblock %}
 
-    <!--热门题目 start-->
-    <section class="panel">
-        <div class="panel-body progress-panel">
-            <div class="task-progress">
-                <h1>热门算法题目</h1>
-                <p>答题人数最多的题目</p>
-            </div>
-        </div>
-        <table class="table table-hover personal-task">
-            <tbody>
-
-            <tr>
-                <td>1</td>
-                <td>
-                    <a href="http://127.0.0.1:8000/question/7679/" title="sql优化">7679. sql优化</a>
-                </td>
-                <td>
-
-                    <span class="label label-info">入门</span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>2</td>
-                <td>
-                    <a href="http://127.0.0.1:8000/question/7576/" title="三次握手">7576. 三次握手</a>
-                </td>
-                <td>
-
-                    <span class="label label-info">入门</span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>3</td>
-                <td>
-                    <a href="http://127.0.0.1:8000/question/7567/" title="单向链表如何使用快速排序算法进行排序；">7567. 单向链表如何使...</a>
-                </td>
-                <td>
-
-                    <span class="label label-info">入门</span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>4</td>
-                <td>
-                    <a href="http://127.0.0.1:8000/question/7584/" title="HTTP和HTTPS">7584. HTTP和HTTPS</a>
-                </td>
-                <td>
-
-                    <span class="label label-info">入门</span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>5</td>
-                <td>
-                    <a href="http://127.0.0.1:8000/question/7580/" title="Post和Get">7580. Post和Get</a>
-                </td>
-                <td>
-
-                    <span class="label label-info">入门</span>
-
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-    </section>
-    <!--work progress end-->
-
-    <!--刷题类别排行 start-->
-    <section class="panel">
-        <div class="panel-body progress-panel">
-            <div class="task-progress">
-                <h1>类别排行榜</h1>
-                <p>完成度排行</p>
-            </div>
-        </div>
-        <table class="table table-hover personal-task">
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>
-                    <a href="#">网络题</a>
-                </td>
-                <td>
-                                          <span>
-                                              <div class="progress progress-striped active progress-xs">
-                                                  <div class="progress-bar progress-bar-success" role="progressbar"
-                                                       aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                                                       style="width: 100%">
-                                                      <span class="sr-only">45% Complete</span>
-                                                  </div>
-                                              </div>
-                                          </span>
-                </td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>
-                    <a href="#">网络题</a>
-                </td>
-                <td>
-                                          <span>
-                                             <div class="progress progress-striped active progress-xs">
-                                                  <div class="progress-bar progress-bar-success" role="progressbar"
-                                                       aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                                                       style="width: 100%">
-                                                      <span class="sr-only">45% Complete</span>
-                                                  </div>
-                                              </div>
-                                          </span>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>
-                    <a href="#">网络题</a>
-                </td>
-                <td>
-                                          <span>
-                                              <div class="progress progress-striped active progress-xs">
-                                                  <div class="progress-bar progress-bar-success" role="progressbar"
-                                                       aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                                                       style="width: 100%">
-                                                      <span class="sr-only">45% Complete</span>
-                                                  </div>
-                                              </div>
-                                          </span>
-                </td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>
-                    <a href="#">网络题</a>
-                </td>
-                <td>
-                                          <span>
-                                              <div class="progress progress-striped active progress-xs">
-                                                  <div class="progress-bar progress-bar-success" role="progressbar"
-                                                       aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                                                       style="width: 100%">
-                                                      <span class="sr-only">45% Complete</span>
-                                                  </div>
-                                              </div>
-                                          </span>
-                </td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>
-                    <a href="#">网络题</a>
-                </td>
-                <td>
-                                          <span>
-                                              <div class="progress progress-striped active progress-xs">
-                                                  <div class="progress-bar progress-bar-success" role="progressbar"
-                                                       aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"
-                                                       style="width: 45%">
-                                                      <span class="sr-only">45% Complete</span>
-                                                  </div>
-                                              </div>
-                                          </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-    <!--work progress end-->
-
-    <!--近30天刷题用户排行榜 start-->
-    <section class="panel">
-        <div class="panel-body progress-panel">
-            <div class="task-progress">
-                <h1>近30天刷题用户排行榜</h1>
-                <p></p>
-            </div>
-        </div>
-        <table class="table table-hover personal-task">
-            <tbody>
-
-            <tr>
-                <td>1</td>
-                <td>
-                    <a href="">admin</a>
-                </td>
-                <td>
-                    <span>1/489</span>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-    </section>
-    <!--work progress end-->
-</div>
+{% block load_css %}
+    <link rel="stylesheet" href="{% static 'assets/bootstrap-table/bootstrap-table.css' %}">
 {% endblock %}
