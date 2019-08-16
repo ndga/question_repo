@@ -32,7 +32,7 @@
             <a href="javascript:void(0);"><img id="captcha_img" src="#"/></a>
             <label class="checkbox">
                 <input type="checkbox" value="remember-me"> 记住密码
-                <span class="pull-right"> <a href="#"> 忘记密码?</a></span>
+                <span class="pull-right"> <a href="{% url 'accounts:password_forget' %}"> 忘记密码?</a></span>
             </label>
             <button class="btn btn-lg btn-login btn-block" type="submit">登录</button>
             <p class="msg"></p>

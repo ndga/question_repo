@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load thumbnail %}
 <!DOCTYPE html>
 <html style="overflow: hidden;" lang="en">
 <head>
@@ -43,12 +44,12 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <ul class="nav navbar-nav">
                     <li class="active">
-                        <a class="" href="http://127.0.0.1:8000/">
+                        <a class="" href="{% url 'repo:index' %}">
                             <span> 首页 </span>
                         </a>
                     </li>
                     <li class="">
-                        <a class="" href="http://127.0.0.1:8000/question/">
+                        <a class="" href="{% url 'repo:questions' %}">
                             <span> 校招题 </span>
                         </a>
                     </li>
@@ -64,9 +65,8 @@
                     {% if user.is_authenticated %}
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                                <img alt="" src="{% static 'img/1534323246.png' %}" height="30px">
-
-                                <span class="username">admin</span>
+                                <img alt="" src="{{ user.avator_sor|thumbnail_url:'avator' }}" height="30px">
+                                <span class="username">{{ user }}</span>
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
@@ -101,7 +101,7 @@
         <!--main content end-->
     </section>
 </div>
-{% include 'crontribute_modal.html' %}
+{% include 'contribute_modal.html' %}
 
 <!-- js placed at the end of the document so the pages load faster -->
 <script src="{% static 'js/jquery.js' %}"></script>
@@ -111,6 +111,7 @@
 <!--common script for all pages-->
 <script src="{% static 'js/common-scripts.js' %}"></script>
 <script src="{% static 'js/owl.carousel.js' %}"></script>
+
 {% block load_js %}
 {% endblock %}
 

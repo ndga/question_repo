@@ -5,6 +5,10 @@ from .validator import valid_difficulty
 from ckeditor.fields import RichTextField
 # 含文件上传
 from ckeditor_uploader.fields import RichTextUploadingField
+from django.db.models import Count
+import logging
+logger = logging.getLogger()
+
 # Create your models here.
 
 class Category(models.Model):
@@ -58,9 +62,136 @@ class Questions(models.Model):
         verbose_name = "题库"
         verbose_name_plural = verbose_name
         permissions = (
-                        ('can_change_question', "可以修改题目信息"),
-                       ('can_add_question', "可以添加题目信息"),
-                       )
+            ('can_change_question', "可以修改题目信息"),
+            ('can_add_question', "可以添加题目信息"),
+            ('can_change_question_status', "可以修改题目状态"),
+        )
 
     def __str__(self):
         return f"{self.id}:{self.title}"
+
+
+class QuestionsCollection(models.Model):
+    """收藏问题"""
+    question = models.ForeignKey(Questions, verbose_name="问题", related_name='questions_collection_set')
+    user = models.ForeignKey(User, verbose_name="收藏者", related_name='questions_collection_set')
+    create_time = models.DateTimeField("收藏/取消时间", auto_now=True)
+    # True表示收藏 ,False表示未收藏
+    status = models.BooleanField("收藏状态", default=True)
+
+    class Meta:
+        verbose_name = "收藏记录"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        if self.status:
+            ret = "收藏"
+        else:
+            ret = "取消收藏"
+        return f"{self.user}:{ret}:{self.question.title}"
+
+
+class AnswersManager(models.Manager):
+    def hot_question(self):
+        """热门题目"""
+        # question = self.values('question').annotate(Count('id'))
+        # print(question)
+        question = self.raw(
+            "select repo_answers.id as answer_id, repo_questions.id as id, count(repo_answers.id) as answer_num, repo_questions.title, repo_questions.grade from repo_answers left join repo_questions on repo_answers.question_id = repo_questions.id GROUP BY repo_questions.title ORDER BY answer_num desc limit 5;")
+        return question
+
+    def hot_user(self):
+        """热门用户"""
+        import datetime
+        today_30 = datetime.date.today() + datetime.timedelta(days=-30)
+        user_rank = self.filter(last_modify__gte=today_30).values('user__username').annotate(Count('id')).order_by("-id__count")[:5]
+        return user_rank
+
+
+class AnswersManager(models.Manager):
+    def hot_question(self):
+        """热门题目"""
+        # question = self.values('question').annotate(Count('id'))
+        # print(question)
+        question = self.raw("select repo_answers.id as answer_id, repo_questions.id as id, count(repo_answers.id) as answer_num, repo_questions.title, repo_questions.grade from repo_answers left join repo_questions on repo_answers.question_id = repo_questions.id GROUP BY repo_questions.title ORDER BY answer_num desc limit 5;")
+        return question
+
+    def hot_user(self):
+        """30热门用户"""
+        import datetime
+        today_30 = datetime.date.today() + datetime.timedelta(days=-30)
+        user_rank = self.filter(last_modify__gte=today_30).values('user__username').annotate(Count('id')).order_by("-id__count")[:5]
+        return user_rank
+
+
+class Answers(models.Model):
+    """答题记录"""
+    objects = AnswersManager()
+    # exam = models.ForeignKey(ExamQuestions, verbose_name="所属试卷", null=True, blank=True)
+    question = models.ForeignKey(Questions, verbose_name="题目")
+    answer = models.TextField(verbose_name="学生答案")
+    user = models.ForeignKey(User, verbose_name="答题人")
+    create_time = models.DateTimeField(auto_now_add=True)
+    last_modify = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "答题记录"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f"{self.user}-{self.question.title}"
+
+        # def to_dict(self):
+        #     return dict([(attr, getattr(self, attr)) for attr in
+        #                  [f.name for f in self._meta.fields]])
+        #     # type(self._meta.fields).__name__
+
+
+class AnswersCollection(models.Model):
+    """收藏答案"""
+    answer = models.ForeignKey(Answers, verbose_name="答题记录", related_name='answers_collection_set')
+    user = models.ForeignKey(User, verbose_name="收藏者", related_name='answers_collection_set')
+    create_time = models.DateTimeField("收藏/取消时间", auto_now=True)
+    # True表示收藏 ,False表示未收藏
+    status = models.BooleanField("收藏状态", default=True)
+
+    class Meta:
+        verbose_name = "收藏记录"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        if self.status:
+            ret = "收藏"
+        else:
+            ret = "取消收藏"
+        return f"{self.user}:{ret}:{self.answer}"
+
+
+class UserLog(models.Model):
+    """用户日志"""
+    OPERATE = ((1, "收藏"), (2, "取消收藏"), (3, "回答"))
+    user = models.ForeignKey(User, verbose_name="用户")
+    operate = models.CharField(choices=OPERATE, max_length=10, verbose_name="操作")
+    question = models.ForeignKey(Questions, verbose_name="题目", null=True, blank=True)
+    answer = models.ForeignKey(Answers, verbose_name="回答", null=True, blank=True)
+    create_time = models.DateTimeField(verbose_name="回答时间", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "用户日志"
+        verbose_name_plural = verbose_name
+        ordering = ['-create_time']
+
+    def __str__(self):
+        msg = ""
+        if self.question:
+            msg = self.question.title
+        elif self.answer:
+            msg = self.answer
+        return f"{self.user}{self.operate}{msg}"
+
+    def save(self, *args, **kwargs):
+        if self.question or self.answer:
+            super().save()
+        else:
+            logger.error("出错了，操作日志必须有一个操作对象")
+            raise ValidationError("必须有一个操作对象,出错了")

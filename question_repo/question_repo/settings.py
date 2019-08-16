@@ -26,6 +26,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SITE_NAME = '题库系统'
+SITE_DESC = '人生苦短，我用python'
+SITE_KEYWORDS = 'python, django, flask'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,12 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 添加应用到INSTALLED_APPS
-    'apps.repo',
+    'apps.repo.apps.RepoConfig',
     'apps.accounts',
     'apps.usercenter',
     'apps.apis',
     'ckeditor',
     'ckeditor_uploader',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'question_repo.context_processors.site_info',
+                'apps.repo.context_processors.repo_data',
             ],
         },
     },
@@ -125,6 +132,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(os.path.join(BASE_DIR, "static"))
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'allstatic')
+
 
 LOG_ROOT = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_ROOT):
@@ -267,6 +276,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if not os.path.exists(MEDIA_ROOT):
     os.mkdir(MEDIA_ROOT)
 MEDIA_URL = '/media/'
+# 单位：px
+THUMB_SIZE = 70
+
+# 修改上传文件大小（Default：2621440（i.e.2.5 MB).)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440*10
 
 # CKEditor配置
 # 真实路径为：MEDIA_URL+CKEDITOR_UPLOAD_PATH(MEDIA_ROOT/CKEDITOR_UPLOAD_PATH)
@@ -283,3 +297,22 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'Full',
     },
 }
+
+THUMBNAIL_ALIASES = {
+    "":{
+        'avator':{'size':(50, 50),"crop":True},
+    },
+}
+
+DEFAULT_FROM_EMAIL = "ndga@qq.com"
+
+# QQ邮箱SMTP服务器地址
+EMAIL_HOST = 'smtp.qq.com'
+# 发件人的邮箱
+EMAIL_HOST_USER = 'ndga@qq.com'
+# 发件人邮箱密码
+EMAIL_HOST_PASSWORD = 'huldixryaumnfdhh'
+# tls协议，有True和False两种情况
+EMAIL_USE_TLS = True
+# 发件人的邮箱
+EMAIL_FROM = 'ndga@qq.com'

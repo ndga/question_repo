@@ -84,8 +84,9 @@
                                 <th data-field="grade" data-formatter="gradeFormatter">难度</th>
                                 <!--答题率格式为自定义函数answerFormatter返回的样式-->
                                 <th data-field="answer" data-formatter="answerFormatter">答题率</th>
-                                <th data-field="oper">操作
-                                </th>
+                                <!--操作格式为自定义函数operateFormatter返回的样式-->
+                                <!--操作动作为自定义函数operateEvents-->
+                                <th data-field="oper" data-formatter="operateFormatter" data-events="operateEvents">操作</th>
                             </tr>
                             </thead>
                         </table>
@@ -132,7 +133,6 @@
             return params;
         }
 
-
         // 当修改查询参数时，重新加载table数据
         var $select_grade = $('#grade');
         var $select_category = $('#category');
@@ -152,7 +152,6 @@
                 $table.bootstrapTable('refresh');
             });
         });
-
 
         // 定义题目难度格式，返回html字符串，不同难度用不同中文和label颜色标记
         function gradeFormatter(value, row, index) {
@@ -190,6 +189,48 @@
         function answerFormatter(value, row, index) {
             return '17%'
         }
+
+        // 定义操作列格式，返回html字符串
+        function operateFormatter(value, row, index) {
+            if (row.collection == true) {
+                li = '<i class="glyphicon glyphicon-heart question-id-' + row.id + '"></i>'
+            } else {
+                li = '<i class="glyphicon glyphicon-heart-empty question-id-' + row.id + '"></i>'
+            }
+            return [
+                '<a class="like" href="javascript:void(0)" title="收藏">',
+                li,
+                '</a>',
+            ].join('');
+        }
+
+        // 定义收藏题目的点击事件
+        operateEvents = {
+            // 操作栏，like按钮
+            'click .like': function (e, value, row) {
+                // alert('You click like action, row: ' + JSON.stringify(row));
+                // ajax调用接口：'/apis/question/collection/'+ row.id +'/'
+                $.ajax({
+                    url: '/apis/question/collection/' + row.id + '/',
+                    type: 'GET',
+                    // dataType: 'json',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            obj_a = $(".question-id-" + row.id);
+                            // 根据状态显示爱心
+                            if (data.msg.status) {
+                                obj_a.attr("class", "glyphicon glyphicon-heart " + "question-id-" + row.id)
+                            } else {
+                                obj_a.attr("class", "glyphicon glyphicon-heart-empty " + "question-id-" + row.id)
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            },
+        };
     </script>
 {% endblock %}
 

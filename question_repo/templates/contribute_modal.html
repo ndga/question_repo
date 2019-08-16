@@ -1,0 +1,84 @@
+{# My Modal 模态框 #}
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal-1" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title">贡献题目</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" role="form" method="post" action="{% url 'repo:question' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="inputQuestionTitle" class="col-lg-2 control-label">标题</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputQuestionTitle" name="title"
+                                   placeholder="标题">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputQuestionTitle" class="col-lg-2 control-label">分类</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" id="分类" name="category">
+                                <option value="0"> 选择分类</option>
+                                {% for item in category %}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputQuestionTitle" class="col-lg-2 control-label">内容</label>
+                        <div class="col-lg-10">
+                            <textarea type="text" class="form-control" id="inputQuestionTitle" name="content"
+                                      placeholder="内容"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-offset-2 col-lg-10">
+                            <button type="submit" class="btn btn-default" id="contribution_btn">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{#<script>#}
+{#    $("#contribution_btn").click(function () {#}
+{#        // some_check#}
+{#        $.ajax({#}
+{#            url: "{% url '' %}",#}
+{#            type: "POST",#}
+{#            dataType: "json",#}
+{#            data: $("#register_form").serialize(),#}
+{#            success: function (data) {#}
+{#                if (data.status == 200) {#}
+{#                    window.location.href = '{% url 'repo:index' %}';#}
+{#                } else {#}
+{#                    msg = "新错误类型"#}
+{#                    if (data.status == 400 || data.status == 401) {#}
+{#                        msg = data.msg#}
+{#                    } else {#}
+{#                        for (var i in data.msg) {#}
+{#                            msg = i + data.msg[i]#}
+{#                            break#}
+{#                        }#}
+{#                    }#}
+{#                    $.gritter.add({#}
+{#                        // (string | mandatory) the heading of the notification#}
+{#                        title: '提交结果',#}
+{#                        // (string | mandatory) the text inside the notification#}
+{#                        //text: 'This will fade out after a certain amount of time. Vivamus eget tincidunt velit. Cum sociis natoque penatibus et <a href="#" style="color:#ccc">magnis dis parturient</a> montes, nascetur ridiculus mus.'#}
+{#                        text: msg#}
+{#                    });#}
+{#                }#}
+{#            },#}
+{#            // 解决csrftoken#}
+{#            beforeSend: function (xhr, settings) {#}
+{#                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");#}
+{#            }#}
+{#        });#}
+{#    });#}
+{#</script>#}

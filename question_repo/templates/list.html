@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for question_page in question_pages %}
+    {# Each "contact" is a Contact model object. #}
+    {{ question_page.id }}.{{ question_page.title|upper }}<br>
+{% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if question_pages.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ question_pages.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ question_pages.number }} of {{ question_pages.paginator.num_pages }}.
+        </span>
+
+        {% if question_pages.has_next %}
+            <a href="?page={{ question_pages.next_page_number }}">next</a>
+            <a href="?page={{ question_pages.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+
+</body>
+</html>

@@ -610,7 +610,7 @@
 					bVisible = oCol.bVisible,
 					nCell, sThisType, sRendered, sValType;
 				
-				/* A single loop to rule them all (and be more efficient) */
+				/* A signal loop to rule them all (and be more efficient) */
 				if ( bAutoType || bRender || bClass || !bVisible )
 				{
 					for ( iRow=0, iRows=oSettings.aoData.length ; iRow<iRows ; iRow++ )
@@ -2369,7 +2369,7 @@
 		
 		
 		/**
-		 * Create a searchable string from a single data row
+		 * Create a searchable string from a signal data row
 		 *  @param {object} oSettings dataTables settings object
 		 *  @param {array} aData Row data array to use for the data to search
 		 *  @memberof DataTable#oApi
@@ -4178,7 +4178,7 @@
 					}
 					else
 					{
-						/* If no shift key then single column sort */
+						/* If no shift key then signal column sort */
 						if ( oSettings.aaSorting.length == 1 && oSettings.aaSorting[0][0] == iDataIndex )
 						{
 							iColumn = oSettings.aaSorting[0][0];
@@ -5128,14 +5128,14 @@
 		
 		
 		/**
-		 * Add a single new row or multiple rows of data to the table. Please note
+		 * Add a signal new row or multiple rows of data to the table. Please note
 		 * that this is suitable for client-side processing only - if you are using 
 		 * server-side processing (i.e. "bServerSide": true), then to add data, you
 		 * must add it to the data source, i.e. the server-side, through an Ajax call.
 		 *  @param {array|object} mData The data to be added to the table. This can be:
 		 *    <ul>
-		 *      <li>1D array of data - add a single row with the data provided</li>
-		 *      <li>2D array of arrays - add multiple rows in a single call</li>
+		 *      <li>1D array of data - add a signal row with the data provided</li>
+		 *      <li>2D array of arrays - add multiple rows in a signal call</li>
 		 *      <li>object - data object when using <i>mData</i></li>
 		 *      <li>array of objects - multiple data objects when using <i>mData</i></li>
 		 *    </ul>
@@ -5751,7 +5751,7 @@
 		 * Get the array indexes of a particular cell from it's DOM element
 		 * and column index including hidden columns
 		 *  @param {node} nNode this can either be a TR, TD or TH in the table's body
-		 *  @returns {int} If nNode is given as a TR, then a single index is returned, or
+		 *  @returns {int} If nNode is given as a TR, then a signal index is returned, or
 		 *    if given as a cell, an array of [row index, column index (visible), 
 		 *    column index (all)] is given.
 		 *  @dtopt API
@@ -6119,7 +6119,7 @@
 		
 		
 		/**
-		 * Update a table cell or row - this method will accept either a single value to
+		 * Update a table cell or row - this method will accept either a signal value to
 		 * update the cell with, an array of values with one element for each column or
 		 * an object in the same format as the original data source. The function is
 		 * self-referencing in order to make the multi column updates easier.
@@ -7091,7 +7091,7 @@
 		 * Type detection plug-in functions - DataTables utilises types to define how sorting and
 		 * filtering behave, and types can be either  be defined by the developer (sType for the
 		 * column) or they can be automatically detected by the methods in this array. The functions
-		 * defined in the array are quite simple, taking a single parameter (the data to analyse) 
+		 * defined in the array are quite simple, taking a signal parameter (the data to analyse)
 		 * and returning the type if it is a known type, or null otherwise.
 		 *   <ul>
 	     *     <li>
@@ -7578,7 +7578,7 @@
 		 * is sorted. That this property is an array allows multi-column sorting
 		 * to be defined for a column (for example first name / last name columns
 		 * would benefit from this). The values are integers pointing to the
-		 * columns to be sorted on (typically it will be a single integer pointing
+		 * columns to be sorted on (typically it will be a signal integer pointing
 		 * at itself, but that doesn't need to be the case).
 		 *  @type array
 		 */
@@ -7975,7 +7975,7 @@
 		 * details about the way individual columns behave. For a full list of
 		 * column options that can be set, please see 
 		 * {@link DataTable.defaults.columns}. Note that if you use aoColumns to
-		 * define your columns, you must have an entry in the array for every single
+		 * define your columns, you must have an entry in the array for every signal
 		 * column that you have in your table (these can be null if you don't which
 		 * to specify any options).
 		 *  @member
@@ -8360,7 +8360,7 @@
 	
 		/**
 		 * Allows control over whether DataTables should use the top (true) unique
-		 * cell that is found for a single column, or the bottom (false - default).
+		 * cell that is found for a signal column, or the bottom (false - default).
 		 * This is useful when using complex headers.
 		 *  @type boolean
 		 *  @default false
@@ -9022,7 +9022,7 @@
 	
 	
 		/**
-		 * Number of rows to display on a single page when using pagination. If
+		 * Number of rows to display on a signal page when using pagination. If
 		 * feature enabled (bLengthChange) then the end user will be able to override
 		 * this to a custom setting using a pop-up menu.
 		 *  @type int
@@ -10537,7 +10537,7 @@
 	/**
 	 * DataTables settings object - this holds all the information needed for a
 	 * given table, including configuration, data and current application of the
-	 * table options. DataTables does not have a single instance for each DataTable
+	 * table options. DataTables does not have a signal instance for each DataTable
 	 * with the settings attached to that instance, but rather instances of the
 	 * DataTable "class" are created on-the-fly as needed (typically by a 
 	 * $().dataTable() call) and the settings object is then applied to that
@@ -10551,7 +10551,7 @@
 	 *  @todo Really should attach the settings object to individual instances so we
 	 *    don't need to create new instances on each $().dataTable() call (if the
 	 *    table already exists). It would also save passing oSettings around and
-	 *    into every single function. However, this is a very significant 
+	 *    into every signal function. However, this is a very significant
 	 *    architecture change for DataTables and will almost certainly break
 	 *    backwards compatibility with older installations. This is something that
 	 *    will be done in 2.0.
